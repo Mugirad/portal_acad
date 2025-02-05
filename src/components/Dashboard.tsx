@@ -1,16 +1,44 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { BookOpen, ClipboardList, LogOut, User, GraduationCap } from 'lucide-react';
 import SupervisionSecuencias from './sections/supervision_secuencias';
 import SecuenciaDidactica from './sections/secuencias_did';
 
 interface DashboardProps {
   onLogout: () => void;
-  userInfo: any; // Recibimos la información del usuario desde el login
+  userInfo: any;
+}
+
+function stringToColor(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += ('00' + value.toString(16)).substr(-2);
+  }
+  return color;
 }
 
 function Dashboard({ onLogout, userInfo }: DashboardProps) {
   const [currentSection, setCurrentSection] = useState('secuencia');
-  console.log(userInfo);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null); 
+  const buttonRef = useRef<HTMLButtonElement | null>(null); 
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node) && buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  useState(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  });
+
+  const avatarColor = stringToColor(userInfo?.name || "default");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,30 +68,42 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
               </div>
             </div>
             <div className="flex items-center">
-            <div className="flex-shrink-0 relative group">
-              <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none">
-                {/* Verifica si photoUrl está disponible, si no se muestra el ícono de usuario */}
-                {userInfo?.photoUrl ? (
-                  <img
-                    src={userInfo.photoUrl} // Asegúrate de que la URL sea correcta
-                    alt="User Avatar"
-                    className="h-6 w-6 rounded-full"
-                  />
-                ) : (
-                  <User className="h-6 w-6" />
-                )}
+              <div className="flex-shrink-0 relative">
+                <button
+                  ref={buttonRef}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="p-2 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none cursor-pointer"
+                >
+                  {userInfo?.photoUrl ? (
+                    <img
+                      src={userInfo.photoUrl}
+                      alt="User Avatar"
+                      className="h-6 w-6 rounded-full"
+                    />
+                  ) : (
+                    <div className="h-6 w-6 rounded-full flex items-center justify-center" style={{ backgroundColor: avatarColor }}>
+                      <span className="text-white text-sm">{userInfo?.name?.[0]}</span>
+                    </div>
+                  )}
                 </button>
-                <div className="hidden group-hover:block absolute right-0 w-48 py-1 mt-2 bg-white rounded-md shadow-lg z-50">
-                  <div className="px-4 py-2 text-sm text-gray-700">{userInfo?.name}</div>
-                  <div className="px-4 py-2 text-sm text-gray-500">{userInfo?.email}</div>
-                  <button
-                    onClick={onLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Cerrar Sesión
-                  </button>
-                </div>
+                {isMenuOpen && (
+                  <div ref={menuRef} className="absolute right-0 w-64 cursor-pointer py-1 mt-2 bg-white rounded-md shadow-lg z-50 border border-gray-300">
+                    <div className="px-4 py-1 text-sm text-gray-700">
+                      {userInfo?.name}
+                      <div className="text-xs text-gray-500 mt-1">
+                        <span className="inline-block px-2 py-1 text-sm text-white bg-blue-500 rounded-full">Docente</span>
+                      </div>
+                    </div>
+                    <div className="px-4 py-1 text-sm text-gray-500">{userInfo?.email}</div>
+                    <button
+                      onClick={onLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
