@@ -1,6 +1,7 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 
 const Login = ({ setUser }: { setUser: React.Dispatch<React.SetStateAction<any>> }) => {
   const navigate = useNavigate();
@@ -34,5 +35,4 @@ const Login = ({ setUser }: { setUser: React.Dispatch<React.SetStateAction<any>>
     </div>
   );
 };
-
 export default Login;

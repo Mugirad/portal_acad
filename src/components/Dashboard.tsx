@@ -42,7 +42,7 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-lg">
+      <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -72,23 +72,24 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
                 <button
                   ref={buttonRef}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="p-2 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none cursor-pointer"
+                  className="p-0 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none cursor-pointer"
                 >
-                  {userInfo?.photoUrl ? (
+                  {userInfo?.picture && userInfo?.picture !== "" ? (
                     <img
-                      src={userInfo.photoUrl}
+                      src={userInfo.picture}
                       alt="User Avatar"
-                      className="h-6 w-6 rounded-full"
+                      className="h-8 w-8 rounded-full"
+                      onError={(e) => (e.target as HTMLImageElement).src = "/path/to/default-image.png"} // Ruta de imagen predeterminada
                     />
                   ) : (
-                    <div className="h-6 w-6 rounded-full flex items-center justify-center" style={{ backgroundColor: avatarColor }}>
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: avatarColor }}>
                       <span className="text-white text-sm">{userInfo?.name?.[0]}</span>
                     </div>
                   )}
                 </button>
                 {isMenuOpen && (
-                  <div ref={menuRef} className="absolute right-0 w-64 cursor-pointer py-1 mt-2 bg-white rounded-md shadow-lg z-50 border border-gray-300">
-                    <div className="px-4 py-1 text-sm text-gray-700">
+                  <div ref={menuRef} className="absolute right-0 w-64 cursor-pointer py-1 mt-1 bg-white rounded-md shadow-lg z-50 border border-gray-300">
+                    <div className="px-4 py-1 text-medium text-gray-700">
                       {userInfo?.name}
                       <div className="text-xs text-gray-500 mt-1">
                         <span className="inline-block px-2 py-1 text-sm text-white bg-blue-500 rounded-full">Docente</span>
@@ -97,7 +98,7 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
                     <div className="px-4 py-1 text-sm text-gray-500">{userInfo?.email}</div>
                     <button
                       onClick={onLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-red-400 hover:text-white flex items-center cursor-pointer"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                       Cerrar Sesión
@@ -110,7 +111,7 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 mt-16">
         <div className="bg-white rounded-lg shadow p-6">
           {currentSection === 'secuencia' ? <SecuenciaDidactica /> : <SupervisionSecuencias />}
         </div>
