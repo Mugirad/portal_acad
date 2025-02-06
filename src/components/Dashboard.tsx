@@ -39,7 +39,6 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
   });
 
   const avatarColor = stringToColor(userInfo?.name || "default");
-
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
@@ -69,33 +68,44 @@ function Dashboard({ onLogout, userInfo }: DashboardProps) {
             </div>
             <div className="flex items-center">
               <div className="flex-shrink-0 relative">
-                <button
-                  ref={buttonRef}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="p-0 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none cursor-pointer"
-                >
-                  {userInfo?.picture && userInfo?.picture !== "" ? (
-                    <img
-                      src={userInfo.picture}
-                      alt="User Avatar"
-                      className="h-8 w-8 rounded-full"
-                      onError={(e) => (e.target as HTMLImageElement).src = "/path/to/default-image.png"} // Ruta de imagen predeterminada
-                    />
-                  ) : (
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: avatarColor }}>
-                      <span className="text-white text-sm">{userInfo?.name?.[0]}</span>
-                    </div>
-                  )}
+              <button
+                ref={buttonRef}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-0 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 focus:outline-none cursor-pointer"
+              >
+                {userInfo?.picture && userInfo?.picture !== "" ? (
+                  <img
+                    src={userInfo.picture}
+                    alt="User Avatar"
+                    className="h-8 w-8 rounded-full"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none"; // Oculta la imagen si no se carga
+                      const fallbackAvatar = document.createElement("div");
+                      fallbackAvatar.className =
+                        "h-8 w-8 rounded-full flex items-center justify-center";
+                      fallbackAvatar.style.backgroundColor = avatarColor;
+                      fallbackAvatar.innerHTML = `<span class="text-white text-sm">${userInfo?.name?.[0]}</span>`;
+                      (e.target as HTMLImageElement).parentNode?.appendChild(fallbackAvatar);
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="h-8 w-8 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: avatarColor }}
+                  >
+                    <span className="text-white text-sm">{userInfo?.name?.[0]}</span>
+                  </div>
+                )}
                 </button>
                 {isMenuOpen && (
                   <div ref={menuRef} className="absolute right-0 w-64 cursor-pointer py-1 mt-1 bg-white rounded-md shadow-lg z-50 border border-gray-300">
-                    <div className="px-4 py-1 text-medium text-gray-700">
+                    <div className="px-4 pt-1 pb-0.5 text-medium text-gray-700">
                       {userInfo?.name}
-                      <div className="text-xs text-gray-500 mt-1">
-                        <span className="inline-block px-2 py-1 text-sm text-white bg-blue-500 rounded-full">Docente</span>
+                      <div className="text-[10px] text-gray-500 mt-1">
+                        <span className="inline-block px-2 py-1 text-[10px] text-white bg-blue-500 rounded-full">Docente</span>
                       </div>
                     </div>
-                    <div className="px-4 py-1 text-sm text-gray-500">{userInfo?.email}</div>
+                    <div className="px-4 pt-0.5 py-1 text-sm text-gray-500">{userInfo?.email}</div>
                     <button
                       onClick={onLogout}
                       className="w-full text-left px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-red-400 hover:text-white flex items-center cursor-pointer"
