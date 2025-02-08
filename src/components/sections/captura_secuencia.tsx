@@ -21,7 +21,7 @@ const CapturaSecuencia = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-900">
       {!showForm ? (
         <a
           onClick={handleCardClick}

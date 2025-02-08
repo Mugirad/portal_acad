@@ -404,6 +404,7 @@ export default function SecuenciaFormato() {
               ></textarea>
               <label className="block bg-gray-200 p-2 mb-2 font-bold rounded-lg" htmlFor="instrumento">Instrumento de evaluación:</label>
               <textarea
+                type="text"
                 id="instrumento"
                 name="instrumento"
                 value={formData.instrumento}
